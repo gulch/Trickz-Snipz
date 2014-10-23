@@ -3,7 +3,7 @@
  * @author gulch <contact@gulch.in.ua>
  */
 
-namespace gulch\phpTrickz;
+namespace gulchTrickz\php;
 
 
 class DataUri
