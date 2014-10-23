@@ -1,21 +1,35 @@
 <?php
 /**
- * @author gulch (contact@gulch.in.ua)
+ * @author gulch <contact@gulch.in.ua>
  */
 
-function generateDataURI($path)
+namespace gulch\phpTrickz;
+
+
+class DataUri
 {
-    $dataURI = '';
-
-    if(file_exists($path))
+    /**
+     * @param $path
+     * @return string
+     */
+    public static function make($path)
     {
-        $mime_type = mime_content_type($path);
-        $data = file_get_contents($path);
-        if($data && $mime_type)
-        {
-            $dataURI = 'data:' . $mime_type . ';base64,' . base64_encode($data);
-        }
-    }
+        $dataURI = '';
 
-    return $dataURI;
+        if(file_exists($path))
+        {
+            $mime_type = mime_content_type($path);
+            $data = file_get_contents($path);
+            if($data && $mime_type)
+            {
+                $dataURI = 'data:' . $mime_type . ';base64,' . base64_encode($data);
+            }
+        }
+        else
+        {
+            throw new \Exception('image: '. $path. ' not found!;');
+        }
+
+        return $dataURI;
+    }
 }
