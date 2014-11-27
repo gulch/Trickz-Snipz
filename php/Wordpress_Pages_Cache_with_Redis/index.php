@@ -1,24 +1,25 @@
 <?php
 
 /*
-    Author: Gulch
-    Updated: 2014-06-01
+    Author: gulch <contact@gulch.in.ua>
+    Updated: 2014-10-24
 
     This is a redis caching system for wordpress.
-    see more here: www.gulch.tk/worpress-redis-cache-by-gulch
+    See more here: http://gulch.in.ua/worpress-redis-cache-by-gulch
 
     Originally written by Jeedo Aquino but improved by Gulch.
 
-    !!! use this script at your own risk. i currently use this albeit a slightly modified version
-    to display a redis badge whenever a cache is displayed.
+    !!! use this script at your own risk !!!
 
 */
 
-// change vars here
-$cf = 1;			// set to 1 if you are using cloudflare
-$debug = 0;			// set to 1 if you wish to see execution time and cache actions
+$start = microtime(true);   // start timing page exec
 
-$start = microtime(1);   // start timing page exec
+// change vars here
+$cf = false;        // set to TRUE if you are using cloudflare
+$debug = false;		// set to TRUE if you wish to see execution time and cache actions
+$predis_file_path = '/var/www/default/theta-redis/vendor/autoload.php'; // set path to your Predis autoload file
+$do_minify_html = true; // set to TRUE if you wish minify html code before put to cache
 
 // if cloudflare is enabled
 if ($cf) 
@@ -29,11 +30,11 @@ if ($cf)
     }
 }
 
-// from wp
+// from WP
 define('WP_USE_THEMES', true);
 
-// init predis
-include_once("/var/www/default/theta-redis/vendor/autoload.php");
+// init Predis
+require_once($predis_file_path);
 $redis = new Predis\Client();
 
 // init vars
@@ -43,7 +44,7 @@ $uri = str_replace('reset_cache=all', '', $uri);
 $uri = str_replace('reset_cache=page', '', $uri);
 
 $suffix = url_slug($domain);
-$suffix = $suffix.':';
+$suffix = $suffix . ':';
 $ukey = url_slug($uri);
 if(!$ukey) $ukey = '__index';
 
@@ -102,27 +103,29 @@ elseif ($submit || strpos($_SERVER['REQUEST_URI'], 'reset_cache=page'))
 
                 require('./wp-blog-header.php');
 
-                // get contents of output buffer
-                $html = ob_get_contents();
+                // get contents of output buffer and clean
+                $html = ob_get_clean();
 
                 // clean output buffer
-                ob_end_clean();
-                echo $html;
+                // ob_end_clean();
 
                 // Store to cache only if the page exist and is not a search result.
-                if (!is_404() && !is_search()) 
+                if (!is_404() && !is_search())
                 {
                     // store html contents to redis cache
                     $html = minify_html($html);
                     $redis->set($suffix.$ukey, $html);
                     $msg = 'cache is set';
                 }
+                
+                echo $html;
+                unset($html);
             }
 
-$end = microtime(1); // get end execution time
+$end = microtime(true); // get end execution time
 
 // show messages if debug is enabled
-if ($debug) 
+if ($debug)
 {
     echo '<!-- '.$msg.': '.round($end - $start,6).' seconds -->';
 }
