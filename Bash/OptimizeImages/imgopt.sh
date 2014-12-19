@@ -10,5 +10,5 @@ fi
 
 find $DIR -type f -regextype posix-egrep -regex ".*\.($EXTENSIONS)\$" -exec `dirname $0`/do-imgopt.sh '{}' \;
 
-# if you want delete *.gz files
-# find $DIR -name '*.gz' -delete
+# if you want delete backuped images ( with extension "IMG_FULL"):
+# find $DIR -name '*.IMG_FULL' -delete

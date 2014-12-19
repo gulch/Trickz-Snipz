@@ -12,3 +12,6 @@ if [ -n "$1" ]; then
     $COPY "$OPTIMIZED_NAME" "$FULL_NAME"
     $OPTIMIZE_CMD "$OPTIMIZED_NAME"
 fi
+
+# if you want delete backuped images ( with extension "IMG_FULL"):
+# find $DIR -name '*.IMG_FULL' -delete

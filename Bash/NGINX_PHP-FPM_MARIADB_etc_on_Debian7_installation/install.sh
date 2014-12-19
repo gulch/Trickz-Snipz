@@ -28,7 +28,7 @@ echo "Apt Updating:"
 apt-get update
 
 echo "Install all software:"
-apt-get install "$MYSQL_PACKAGE" php5-fpm php5-mcrypt php5-cli php5-gd php5-imagick php5-mysqlnd nginx-extras nginx-common redis-server zip unzip -y
+apt-get install -y "$MYSQL_PACKAGE" php5-fpm php5-mcrypt php5-cli php5-gd php5-imagick php5-mysqlnd nginx-extras nginx-common redis-server zip unzip
 
 echo "Create WWW, LOG folders and set rights:"
 mkdir /var/www

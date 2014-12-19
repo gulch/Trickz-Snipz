@@ -15,12 +15,10 @@ function gnomeSorting($arr)
         if ($arr[$i - 1] < $arr[$i]) {
             $i = $j;
             ++$j;
-        }
-        else {
+        } else {
             list($arr[$i - 1], $arr[$i]) = array($arr[$i], $arr[$i - 1]);
             --$i;
-            if ($i === 0)
-            {
+            if ($i === 0) {
                 $i = $j;
                 ++$j;
             }

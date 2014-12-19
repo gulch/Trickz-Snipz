@@ -10,18 +10,14 @@ function cocktailSorting($arr)
     $left = 0;
     $right = sizeof($arr) - 1;
     do {
-        for ($i = $left; $i < $right; $i++)
-        {
-            if ($arr[$i] > $arr[$i + 1])
-            {
+        for ($i = $left; $i < $right; $i++) {
+            if ($arr[$i] > $arr[$i + 1]) {
                 list($arr[$i], $arr[$i + 1]) = array($arr[$i + 1], $arr[$i]);
             }
         }
         --$right;
-        for ($i = $right; $i > $left; $i--)
-        {
-            if ($arr[$i] < $arr[$i - 1])
-            {
+        for ($i = $right; $i > $left; $i--) {
+            if ($arr[$i] < $arr[$i - 1]) {
                 list($arr[$i], $arr[$i - 1]) = array($arr[$i - 1], $arr[$i]);
             }
         }

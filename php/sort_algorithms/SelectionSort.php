@@ -27,20 +27,16 @@ function selectionSort(array $arr)
 {
     $countJ = sizeof($arr);
     $countI = $countJ - 1;
-    for ($i = 0; $i < $countI; ++$i)
-    {
+    for ($i = 0; $i < $countI; ++$i) {
         $min = $arr[$i];
         $minKey = $i;
-        for ($j = $i + 1; $j < $countJ; ++$j)
-        {
-            if($arr[$j] < $min)
-            {
+        for ($j = $i + 1; $j < $countJ; ++$j) {
+            if ($arr[$j] < $min) {
                 $min = $arr[$j];
                 $minKey = $j;
             }
         }
-        if($minKey != $i)
-        {
+        if ($minKey != $i) {
             $arr[$minKey] = $arr[$i];
             $arr[$i] = $min;
         }

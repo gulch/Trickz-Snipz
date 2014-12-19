@@ -1,5 +1,5 @@
 #! /bin/sh
-YUICOMPRESS="java -jar /var/theta_backups/yuicompressor-2.4.8.jar"
+YUICOMPRESS="java -jar yuicompressor-2.4.8.jar --charset utf-8"
 TOUCH=touch
 AWK=awk
 RENAME=mv

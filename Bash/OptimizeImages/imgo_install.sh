@@ -4,7 +4,7 @@
 pushd . > /dev/null
 
 ### Installing needed packages
-apt-get install advancecomp libimage-exiftool-perl imagemagick \
+apt-get install -y advancecomp libimage-exiftool-perl imagemagick \
     optipng libjpeg-progs gifsicle pngnq \
     tar unzip libpng-dev git
 

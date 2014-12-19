@@ -15,7 +15,7 @@
 */
 
 // change vars here
-$cf = 0;			// set to 1 if you are using cloudflare
+$cf = 1;			// set to 1 if you are using cloudflare
 $debug = 0;			// set to 1 if you wish to see execution time and cache actions
 
 $start = microtime(1);   // start timing page exec
@@ -32,24 +32,10 @@ if ($cf)
 // from wp
 define('WP_USE_THEMES', true);
 
-$is_redis_ext = true;
+// init predis
+include_once("/var/www/default/theta-redis/vendor/autoload.php");
+$redis = new Predis\Client();
 
-if(extension_loaded('redis'))
-{
-    $redis = new Redis();
-    $is_redis_ext = $redis->connect('/tmp/redis.sock');
-
-    $msg .= 'Usage extension. ';
-}
-
-if(!$is_redis_ext)
-{
-    // init Predis
-    include_once("/var/www/default/theta-redis/vendor/autoload.php");
-    $redis = new Predis\Client();
-
-    $msg .= 'Usage Predis. ';
-}
 // init vars
 $domain = $_SERVER['HTTP_HOST'];
 $uri = $_SERVER['REQUEST_URI'];
@@ -65,13 +51,14 @@ if(!$ukey) $ukey = '__index';
 (isset($_SERVER['HTTP_CACHE_CONTROL']) && $_SERVER['HTTP_CACHE_CONTROL'] == 'max-age=0') ? $submit = 1 : $submit = 0;
 
 // check if logged in to wp
-$loggedin = preg_match("/wordpress_logged_in/", var_export($_COOKIE, true));
+$cookie = var_export($_COOKIE, true);
+$loggedin = preg_match("/wordpress_logged_in/", $cookie);
 
 // check if a cache of the page exists
 if ($redis->exists($suffix.$ukey) && !$loggedin && !$submit && !strpos($uri, '/feed/'))
 {
     echo $redis->get($suffix.$ukey);
-    $msg .= 'Get the page from cache. ';
+    $msg = 'get the page from cache';
 
     // if a comment was submitted or clear page cache request was made delete cache of page
 }
@@ -79,7 +66,7 @@ elseif ($submit || strpos($_SERVER['REQUEST_URI'], 'reset_cache=page'))
     {
         require('./wp-blog-header.php');
         $redis->del($suffix.$ukey);
-        $msg .= 'Cache of page deleted. ';
+        $msg = 'cache of page deleted';
 
     // delete entire cache, works only if logged in
     }
@@ -93,18 +80,18 @@ elseif ($submit || strpos($_SERVER['REQUEST_URI'], 'reset_cache=page'))
                 {
                   $redis->del($key);
                 }
-                $msg .= 'Domain cache flushed. ';
+                $msg = 'domain cache flushed';
             }
             else 
             {
-                $msg = 'No cache to flush';
+                $msg = 'no cache to flush';
             }
         // if logged in don't cache anything
         }
         elseif ($loggedin)
             {
                 require('./wp-blog-header.php');
-                $msg .= 'Not cached. ';
+                $msg = 'not cached';
 
             // cache the page
             }
@@ -128,7 +115,7 @@ elseif ($submit || strpos($_SERVER['REQUEST_URI'], 'reset_cache=page'))
                     // store html contents to redis cache
                     $html = minify_html_ci($html);
                     $redis->set($suffix.$ukey, $html);
-                    $msg .= 'Cache is set ';
+                    $msg = 'cache is set';
                 }
             }
 
@@ -153,6 +140,39 @@ function url_slug($str)
 	// fill spaces with hyphens
 	$str = preg_replace('/\s+/', '-', $str);
 	return $str;
+}
+
+function minify_html($buffer)
+{
+	if($buffer)
+	{
+		if(strpos($buffer,'<pre>') !== false)
+		{
+			$replace = array(
+                '/<!--[^\[](.*?)[^\]]-->/s' => '',
+                "/<\?php/"                  => '<?php ',
+                "/\r/"                      => '',
+                "/>\n</"                    => '><',
+                "/>\s+\n</"					=> '><',
+                "/>\n\s+</"					=> '><',
+            );
+		}
+		else
+		{
+			$replace = array(
+                '/<!--[^\[](.*?)[^\]]-->/s' => '',
+                "/<\?php/"                  => '<?php ',
+                "/\n([\S])/"                => '$1',
+                "/\r/"                      => '',
+                "/\n/"                      => '',
+                "/\t/"                      => '',
+                "/ +/"                      => ' ',
+            );
+		}
+    	$buffer = preg_replace(array_keys($replace), array_values($replace), $buffer);
+	}
+
+    return $buffer;
 }
 
 	/**
