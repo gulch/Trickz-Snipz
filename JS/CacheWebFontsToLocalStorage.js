@@ -1,3 +1,11 @@
+/*
+ * Usage
+ * <!-- This <script> must be placed in the HEAD above all external stylesheet declarations (link[rel=stylesheet]) -->
+    <script>loadFont('sourceSansPro', 'fonts.woff.css', 'fonts.woff2.css')</script>
+ */
+
+
+
 //This script must be placed in the HEAD above all external stylesheet declarations (link[rel=stylesheet])
 function loadFont(fontName, woffUrl, woff2Url) {
     // 0. Many unsupported browsers should stop here
