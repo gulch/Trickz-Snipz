@@ -1,6 +1,6 @@
 location ~* \.php$ {
 	
-	#fastcgi_cache  one;
+	#fastcgi_cache  phpCACHE;
 	#fastcgi_cache_min_uses 3;
 	#fastcgi_cache_valid 200 301 302 304 60m;
 	#fastcgi_cache_key "$request_method|$host|$request_uri";
@@ -29,5 +29,5 @@ location ~* \.php$ {
 	fastcgi_param  SERVER_NAME        $server_name;
 	fastcgi_param  REDIRECT_STATUS    200;
 
-	fastcgi_temp_path /var/cache/nginx/temp/fastcgi;
+	fastcgi_temp_path /tmp/nginx/temp 1 2;
 }

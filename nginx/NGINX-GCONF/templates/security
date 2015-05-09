@@ -10,11 +10,6 @@ location ~* /(images|cache|media|logs|tmp|uploads)/.*.(php|pl|py|jsp|asp|sh|cgi)
 	return 403;
 }
 
-# Забороняємо прямий доступ до .htaccess
-location ~ /\.ht {
-	deny  all;
-}
-
 # Дозволяємо тільки POST,GET,HEAD методи
 if ( $request_method !~ ^(GET|HEAD|POST)$ ) {
 	return 444;
